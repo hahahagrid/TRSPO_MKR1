@@ -40,6 +40,13 @@ public class Server {
                 int[][] matrixA = (int[][]) inputStream.readObject();
                 int[][] matrixB = (int[][]) inputStream.readObject();
 
+                if (M != matrixB.length) {
+                    ObjectOutputStream outputStream = new ObjectOutputStream(socket.getOutputStream());
+                    outputStream.writeObject("Error: The number of columns in Matrix A should match the number of rows in Matrix B.");
+                    socket.close();
+                    return;
+                }
+
                 int[][] resultMatrix = multiplyMatrices(matrixA, matrixB, N, M, L);
 
                 ObjectOutputStream outputStream = new ObjectOutputStream(socket.getOutputStream());
@@ -56,9 +63,11 @@ public class Server {
 
             for (int i = 0; i < N; i++) {
                 for (int j = 0; j < L; j++) {
+                    int sum = 0;
                     for (int k = 0; k < M; k++) {
-                        result[i][j] += matrixA[i][k] * matrixB[k][j];
+                        sum += matrixA[i][k] * matrixB[k][j];
                     }
+                    result[i][j] = sum;
                 }
             }
 

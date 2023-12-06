@@ -7,26 +7,35 @@ public class Client {
         try {
             Socket socket = new Socket("localhost", 9999);
 
-            int N = 2000; // Розмір матриці N x M
-            int M = 1500; // Розмір матриці M x L
-            int L = 1000; // Розмір матриці M x L
+            Random random = new Random();
+
+            int N = 1001 + random.nextInt(1000);
+            int M = 1001 + random.nextInt(1000);
+            int L = 1001 + random.nextInt(1000);
 
             int[][] matrixA = generateRandomMatrix(N, M);
             int[][] matrixB = generateRandomMatrix(M, L);
 
             ObjectOutputStream outputStream = new ObjectOutputStream(socket.getOutputStream());
+
             outputStream.writeInt(N);
             outputStream.writeInt(M);
             outputStream.writeInt(L);
+
             outputStream.writeObject(matrixA);
             outputStream.writeObject(matrixB);
 
             ObjectInputStream inputStream = new ObjectInputStream(socket.getInputStream());
-            int[][] resultMatrix = (int[][]) inputStream.readObject();
+            Object response = inputStream.readObject();
 
-            // Вивід результату
-            System.out.println("Result Matrix:");
-            printMatrix(resultMatrix);
+            if (response instanceof String) {
+                System.out.println((String) response);
+            } else {
+                int[][] resultMatrix = (int[][]) response;
+
+                System.out.println("Result Matrix:");
+                printMatrix(resultMatrix);
+            }
 
             socket.close();
         } catch (IOException | ClassNotFoundException e) {
